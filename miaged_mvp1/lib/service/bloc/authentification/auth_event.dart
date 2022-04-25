@@ -9,7 +9,13 @@ abstract class AuthEvent extends Equatable {
 
 class AuthInitial extends AuthEvent {}
 
-class AuthSignInRequested extends AuthEvent {}
+class AuthSignInAnonRequested extends AuthEvent {}
+
+class AuthSignInRequested extends AuthEvent {
+  final String email;
+  final String password;
+  const AuthSignInRequested(this.email, this.password);
+}
 
 class AuthSignUpRequested extends AuthEvent {}
 

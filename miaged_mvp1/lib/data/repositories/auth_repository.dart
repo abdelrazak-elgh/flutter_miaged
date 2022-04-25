@@ -58,10 +58,12 @@ class AuthRepository {
     }
   }
 
-  Future<void> signInWithCredentials(String email, String password) async {
+  Future<User?> signInWithCredentials(String email, String password) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      User? user = result.user;
+      return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         if (kDebugMode) {
@@ -73,6 +75,7 @@ class AuthRepository {
         }
       }
     }
+    return null;
   }
 
   Future<void> signUp(String email, String password) async {

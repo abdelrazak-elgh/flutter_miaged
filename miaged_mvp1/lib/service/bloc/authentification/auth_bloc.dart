@@ -24,10 +24,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    on<AuthSignInRequested>((event, emit) async {
+    on<AuthSignInAnonRequested>((event, emit) async {
       emit(AuthenticateLoading());
       try {
         User? result = await authRepository.signInAnon();
+        emit(Authenticated(result!));
+        // await Future.delayed(const Duration(seconds: 5), () {
+        // });
+      } catch (e) {
+        emit(AuthError(e.toString()));
+        emit(UnAuthenticated());
+      }
+    });
+
+    on<AuthSignInRequested>((event, emit) async {
+      emit(AuthenticateLoading());
+      try {
+        User? result = await authRepository.signInWithCredentials(
+            event.email, event.password);
         emit(Authenticated(result!));
         // await Future.delayed(const Duration(seconds: 5), () {
         // });
