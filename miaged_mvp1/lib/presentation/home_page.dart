@@ -15,9 +15,9 @@ class HomePageScreen extends StatelessWidget {
       ),
       body: Center(
           child: ElevatedButton(
-        child: const Text('Go to Dashboard'),
+        child: const Text('Go to Login page'),
         onPressed: () {
-          Navigator.of(context).pushNamed('/dashboard');
+          Navigator.of(context).pushNamed('/login');
         },
       )),
     );
