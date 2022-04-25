@@ -1,19 +1,41 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/user.dart';
 
 class AuthRepository {
-  final _firebaseAuth = FirebaseAuth.instance;
+  final _firebaseAuth = firebase_auth.FirebaseAuth.instance;
+  var currentUser = AppUser.empty;
 
-  AppUser? _userFromFirebaseUser(User? user) {
-    return user != null ? AppUser(uid: user.uid) : null;
+  Stream<AppUser> get user {
+    return _firebaseAuth.authStateChanges().map(
+      (firebaseUser) {
+        final user = firebaseUser == null ? AppUser.empty : firebaseUser.toUser;
+        currentUser = user;
+        return user;
+      },
+    );
   }
 
-  // récupérer l'utilisateur courant et ecouter quand l'user se connecte ou deconnecte
-  Stream<AppUser?> get user {
-    return _firebaseAuth.authStateChanges().map(_userFromFirebaseUser);
-  }
+  // AppUser? _userFromFirebaseUser(User? user) {
+  //   return user != null ? AppUser(uid: user.uid) : null;
+  // }
+
+  // // récupérer l'utilisateur courant et ecouter quand l'user se connecte ou deconnecte
+  // Stream<AppUser?> get user {
+  //   return _firebaseAuth.authStateChanges().map(_userFromFirebaseUser);
+  // }
+
+  // Stream<User?> retrieveCurrentUser() {
+  //   return _firebaseAuth.authStateChanges().map((User? user) {
+  //     if (user != null) {
+  //       return user;
+  //     } else {
+  //       return null;
+  //     }
+  //   });
+  // }
 
   Future<User?> signInAnon() async {
     try {
@@ -76,5 +98,20 @@ class AuthRepository {
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+  }
+
+  User getUser() {
+    return _firebaseAuth.currentUser!;
+  }
+
+  bool isSignedIn() {
+    final currentUser = _firebaseAuth.currentUser;
+    return currentUser != null;
+  }
+}
+
+extension on firebase_auth.User {
+  AppUser get toUser {
+    return AppUser(id: uid, email: email, name: displayName, photo: photoURL);
   }
 }

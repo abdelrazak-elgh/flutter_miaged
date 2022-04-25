@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:miaged_mvp1/common/router/app_router.dart';
 
 class App extends StatelessWidget {
-  App({Key? key}) : super(key: key);
+  App({Key? key, required AppRouter appRouter}) : super(key: key);
 
   final AppRouter _appRouter = AppRouter();
 
