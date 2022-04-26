@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:miaged_mvp1/data/repositories/auth_repository.dart';
 import 'package:miaged_mvp1/service/bloc/authentification/auth_bloc.dart';
-import 'package:miaged_mvp1/service/bloc/observer/app_observer.dart';
 
-import 'common/app.dart';
 import 'common/router/app_router.dart';
 
 Future<void> main() async {
@@ -24,6 +22,24 @@ Future<void> main() async {
         ),
       ),
     )),
-    blocObserver: AppBlocObserver(),
+    //blocObserver: AppBlocObserver(),
   );
+}
+
+class App extends StatelessWidget {
+  App({Key? key, required AppRouter appRouter}) : super(key: key);
+
+  final AppRouter _appRouter = AppRouter();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false,
+      onGenerateRoute: _appRouter.onGenerateRoute,
+    );
+  }
 }
