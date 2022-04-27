@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import '../models/user.dart';
 
@@ -22,10 +21,10 @@ class AuthRepository {
     return null;
   }
 
-  Future<User?> signIn(
-      {required String email,
-      required String password,
-      required BuildContext context}) async {
+  Future<User?> signIn({
+    required String email,
+    required String password,
+  }) async {
     try {
       UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);

@@ -9,22 +9,32 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthInProgress) {
-            Navigator.of(context).pushNamed('/dashboard');
+          if (state is AuthUserConnectionInProgress ||
+              state is AuthAnonConnectionInProgress ||
+              state is AuthUserCreationInProgress) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).popAndPushNamed('/dashboard');
+            } else {
+              Navigator.of(context).pushNamed('/dashboard');
+            }
           }
-          if (state is AuthAnonInProgress) {
-            Navigator.of(context).pushNamed('/dashboard');
+          if (state is UnAuthenticated || state is AuthUserConnectPage) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).popAndPushNamed('/signin');
+            } else {
+              Navigator.of(context).pushNamed('/signin');
+            }
           }
-          if (state is AuthUserCreateInProgress) {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed('/signup');
-          }
-          if (state is AuthUserConnectInProgress) {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed('/signin');
+          if (state is AuthUserCreatePage) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).popAndPushNamed('/signup');
+            } else {
+              Navigator.of(context).pushNamed('/signup');
+            }
           }
           if (state is AuthSignOutInProgress) {
-            Navigator.of(context).pushNamed('/signin');
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/signin', (route) => route.isFirst);
           }
           if (state is AuthError) {
             if (kDebugMode) {

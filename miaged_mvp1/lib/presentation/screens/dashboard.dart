@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:miaged_mvp1/data/repositories/auth_repository.dart';
+import 'package:miaged_mvp1/data/data_providers/auth_repository.dart';
 import 'package:miaged_mvp1/service/bloc/authentification/auth_bloc.dart';
 
 class Dashboard extends StatelessWidget {

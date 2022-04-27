@@ -14,8 +14,7 @@ class AuthSignInAnonRequested extends AuthEvent {}
 class AuthSignInRequested extends AuthEvent {
   final String email;
   final String password;
-  final BuildContext context;
-  const AuthSignInRequested(this.email, this.password, this.context);
+  const AuthSignInRequested(this.email, this.password);
 }
 
 class AuthSignUpRequested extends AuthEvent {
@@ -24,8 +23,8 @@ class AuthSignUpRequested extends AuthEvent {
   const AuthSignUpRequested(this.email, this.password);
 }
 
-class AuthUserWantedRegister extends AuthEvent {}
+class AuthUserRegistrationRequested extends AuthEvent {}
 
-class AuthUserWantedConnect extends AuthEvent {}
+class AuthUserConnectionRequested extends AuthEvent {}
 
 class AuthSignOutRequested extends AuthEvent {}

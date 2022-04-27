@@ -11,23 +11,33 @@ class AuthInitialState extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
+class AuthUserConnectPage extends AuthState {}
+
+class AuthUserCreatePage extends AuthState {}
+
 class AuthSignOutInProgress extends AuthState {}
 
-class AuthUserCreateInProgress extends AuthState {}
+class UnAuthenticated extends AuthState {}
 
-class AuthUserConnectInProgress extends AuthState {}
-
-class AuthInProgress extends AuthState {
+class AuthUserCreationInProgress extends AuthState {
   final User user;
-  const AuthInProgress(this.user);
+  const AuthUserCreationInProgress(this.user);
 
   @override
   List<Object> get props => [user];
 }
 
-class AuthAnonInProgress extends AuthState {
+class AuthUserConnectionInProgress extends AuthState {
   final User user;
-  const AuthAnonInProgress(this.user);
+  const AuthUserConnectionInProgress(this.user);
+
+  @override
+  List<Object> get props => [user];
+}
+
+class AuthAnonConnectionInProgress extends AuthState {
+  final User user;
+  const AuthAnonConnectionInProgress(this.user);
 
   @override
   List<Object> get props => [user];
