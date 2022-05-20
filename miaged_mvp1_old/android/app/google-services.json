@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "499914444608",
+    "project_id": "flutter-miaged-f7d01",
+    "storage_bucket": "flutter-miaged-f7d01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499914444608:android:73ee79d834e73b1d9ab4a5",
+        "android_client_info": {
+          "package_name": "com.example.miaged"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499914444608-63ueqi3d2lf0avs0nvb60cqr62ldbmsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNR0oCVfEeioON10gN9mM0JBHtFX_-3x4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499914444608-63ueqi3d2lf0avs0nvb60cqr62ldbmsa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
