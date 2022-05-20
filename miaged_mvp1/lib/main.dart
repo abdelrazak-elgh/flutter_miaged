@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:miaged_mvp1/data/data_providers/auth_repository.dart';
+import 'package:miaged_mvp1/data/repositories/authentication_repository.dart';
+import 'package:miaged_mvp1/data/repositories/database_repository.dart';
 import 'package:miaged_mvp1/service/bloc/authentification/auth_bloc.dart';
 import 'package:miaged_mvp1/service/bloc/observer/app_observer.dart';
 
@@ -12,11 +13,19 @@ Future<void> main() async {
   await Firebase.initializeApp();
   //runApp(App(appRouter: AppRouter()));
   BlocOverrides.runZoned(
-    () => runApp(RepositoryProvider(
-      create: (context) => AuthRepository(),
+    () => runApp(MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => AuthenticationRepository(),
+        ),
+        RepositoryProvider(
+          create: (context) => DatabaseRepository(),
+        ),
+      ],
       child: BlocProvider(
         create: (context) => AuthBloc(
-            authRepository: RepositoryProvider.of<AuthRepository>(context))
+            RepositoryProvider.of<AuthenticationRepository>(context),
+            RepositoryProvider.of<DatabaseRepository>(context))
           ..add(AuthInitial()),
         child: App(
           appRouter: AppRouter(),

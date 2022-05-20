@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:miaged_mvp1/data/data_providers/auth_repository.dart';
-import 'package:miaged_mvp1/presentation/screens/dialog_loading.dart';
-import 'package:miaged_mvp1/presentation/screens/divider_text.dart';
+import 'package:miaged_mvp1/data/repositories/authentication_repository.dart';
+import 'package:miaged_mvp1/presentation/widget/dialog_loading.dart';
+import 'package:miaged_mvp1/presentation/widget/divider_text.dart';
 import 'package:miaged_mvp1/service/bloc/authentification/auth_bloc.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({Key? key}) : super(key: key);
+class SignInView extends StatefulWidget {
+  const SignInView({Key? key}) : super(key: key);
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  State<SignInView> createState() => _SignInViewState();
 }
 
-class _SignInPageState extends State<SignInPage> {
-  final AuthRepository repository = AuthRepository();
+class _SignInViewState extends State<SignInView> {
+  final AuthenticationRepository repository = AuthenticationRepository();
 
   final _emailController = TextEditingController();
 
@@ -44,7 +44,7 @@ class _SignInPageState extends State<SignInPage> {
         ),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is AuthLoading) {
+            if (state is AuthenticationLoading) {
               showDialog(
                   context: context,
                   barrierDismissible: false,
@@ -54,14 +54,19 @@ class _SignInPageState extends State<SignInPage> {
                   });
             }
 
-            if (state is AuthInvalidLogin) {
-              Future.delayed(const Duration(seconds: 2), () {
-                Navigator.pop(dialogContext);
-                // Showing the error message if the user has entered invalid credentials
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.credentialError)));
-              });
+            if (state is AuthenticationSuccess) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/homeapp', (Route<dynamic> route) => false);
             }
+
+            // if (state is AuthenticationFailure) {
+            //   Future.delayed(const Duration(seconds: 2), () {
+            //     Navigator.pop(dialogContext);
+            //     // Showing the error message if the user has entered invalid credentials
+            //     ScaffoldMessenger.of(context)
+            //         .showSnackBar(const SnackBar(content: Text('Login error')));
+            //   });
+            // }
           },
           child: Center(
             child: SingleChildScrollView(
@@ -125,8 +130,11 @@ class _SignInPageState extends State<SignInPage> {
                         )),
                         InkWell(
                           onTap: () {
-                            BlocProvider.of<AuthBloc>(context)
-                                .add(AuthUserRegistrationRequested());
+                            if (Navigator.of(context).canPop()) {
+                              Navigator.of(context).popAndPushNamed('/signup');
+                            } else {
+                              Navigator.of(context).pushNamed('/signup');
+                            }
                           },
                           child: RichText(
                               text: const TextSpan(

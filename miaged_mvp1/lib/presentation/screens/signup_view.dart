@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:miaged_mvp1/data/data_providers/auth_repository.dart';
-import 'package:miaged_mvp1/presentation/screens/dialog_loading.dart';
+import 'package:miaged_mvp1/data/repositories/authentication_repository.dart';
+import 'package:miaged_mvp1/presentation/widget/dialog_loading.dart';
 import 'package:miaged_mvp1/service/bloc/authentification/auth_bloc.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+class SignUpView extends StatefulWidget {
+  const SignUpView({Key? key}) : super(key: key);
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<SignUpView> createState() => _SignUpViewState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
-  final AuthRepository repository = AuthRepository();
+class _SignUpViewState extends State<SignUpView> {
+  final AuthenticationRepository repository = AuthenticationRepository();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -43,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           body: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                if (state is AuthLoading) {
+                if (state is AuthenticationLoading) {
                   showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -53,14 +53,19 @@ class _SignUpPageState extends State<SignUpPage> {
                       });
                 }
 
-                if (state is AuthInvalidLogin) {
-                  Future.delayed(const Duration(seconds: 2), () {
-                    Navigator.pop(dialogContext);
-                    // Showing the error message if the user has entered invalid credentials
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.credentialError)));
-                  });
+                if (state is AuthenticationSuccess) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/homeapp', (Route<dynamic> route) => false);
                 }
+
+                // if (state is AuthenticationFailure) {
+                //   Future.delayed(const Duration(seconds: 2), () {
+                //     Navigator.pop(dialogContext);
+                //     // Showing the error message if the user has entered invalid credentials
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //         const SnackBar(content: Text('Login error')));
+                //   });
+                // }
               },
               child: Center(
                 child: SingleChildScrollView(
@@ -116,6 +121,14 @@ class _SignUpPageState extends State<SignUpPage> {
                               return;
                             }
 
+                            if (_passwordController.text.length < 6) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Votre mot de passe doit contenir au moins 6 caractères')));
+                              return;
+                            }
+
                             if (_confirmPasswordController.text.isEmpty ||
                                 _confirmPasswordController.text !=
                                     _passwordController.text) {
@@ -125,6 +138,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                           'Les mots de passe ne correspondent pas')));
                               return;
                             }
+
                             BlocProvider.of<AuthBloc>(context).add(
                                 AuthSignUpRequested(
                                     _emailController.text.trim(),
@@ -144,8 +158,12 @@ class _SignUpPageState extends State<SignUpPage> {
                             )),
                             InkWell(
                               onTap: () {
-                                BlocProvider.of<AuthBloc>(context)
-                                    .add(AuthUserConnectionRequested());
+                                if (Navigator.of(context).canPop()) {
+                                  Navigator.of(context)
+                                      .popAndPushNamed('/signin');
+                                } else {
+                                  Navigator.of(context).pushNamed('/signin');
+                                }
                               },
                               child: RichText(
                                   text: const TextSpan(

@@ -1,89 +1,76 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:miaged_mvp1/data/data_providers/auth_repository.dart';
+import 'package:miaged_mvp1/data/models/user_model.dart';
+import 'package:miaged_mvp1/data/repositories/authentication_repository.dart';
+import 'package:miaged_mvp1/data/repositories/database_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepository authRepository;
+  final AuthenticationRepository _authenticationRepository;
+  final DatabaseRepository _databaseRepository;
 
-  AuthBloc({required this.authRepository}) : super(AuthInitialState()) {
-    on<AuthInitial>(
-      (event, emit) async {
-        final isSignedIn = authRepository.isSignedIn();
-        if (isSignedIn) {
-          final user = authRepository.getUser();
-          emit(AuthUserConnectionInProgress(user));
-        } else if (!isSignedIn) {
-          emit(UnAuthenticated());
-        } else {
-          emit(const AuthError('Something wrong'));
-        }
-      },
-    );
+  AuthBloc(this._authenticationRepository, this._databaseRepository)
+      : super(AuthenticationInitial()) {
+    on<AuthInitial>((event, emit) async {
+      //UserModel user = await _authenticationRepository.getCurrentUser().first;
+      final result = _authenticationRepository.isSignedIn();
+      if (result) {
+        emit(AuthenticationSuccess());
+      } else {
+        emit(AuthenticationFailure());
+      }
+    });
 
     on<AuthSignInAnonRequested>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthenticationLoading());
       try {
-        final result = await authRepository.signAsGuest();
-        emit(AuthAnonConnectionInProgress(result!));
+        await _authenticationRepository.signAsGuest();
+        emit(AuthenticationSuccess());
       } catch (e) {
-        emit(AuthError(e.toString()));
-        emit(UnAuthenticated());
+        emit(AuthenticationFailure());
       }
     });
 
     on<AuthSignInRequested>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthenticationLoading());
+      UserModel userModel =
+          UserModel(email: event.email, password: event.password);
       try {
-        final result = await authRepository.signIn(
-          email: event.email,
-          password: event.password,
-        );
-        if (result != null) {
-          emit(AuthUserConnectionInProgress(result));
-        } else {
-          emit(const AuthInvalidLogin('invalid credential'));
+        UserCredential? authUser =
+            await _authenticationRepository.signIn(userModel);
+        if (authUser!.user != null) {
+          emit(AuthenticationSuccess());
         }
       } catch (e) {
-        emit(AuthError(e.toString()));
-        emit(UnAuthenticated());
+        emit(AuthenticationFailure());
       }
     });
 
     on<AuthSignUpRequested>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthenticationLoading());
+      UserModel userModel =
+          UserModel(email: event.email, password: event.password);
       try {
-        final credential = await authRepository.signUp(
-            email: event.email, password: event.password);
-        if (credential != null) {
-          //emit(AuthSignUpSuccessfull);
-          emit(AuthUserCreationInProgress(credential));
-        } else {
+        UserCredential? authUser =
+            await _authenticationRepository.signUp(userModel);
+        if (authUser?.user != null) {
+          emit(AuthenticationSuccess());
+        } /*else {
           emit(const AuthInvalidLogin('invalid credential'));
-        }
+        }*/
       } catch (e) {
-        emit(AuthError(e.toString()));
-        emit(UnAuthenticated());
+        emit(AuthenticationFailure());
       }
-    });
-
-    on<AuthUserRegistrationRequested>((event, emit) async {
-      emit(AuthUserCreatePage());
-    });
-
-    on<AuthUserConnectionRequested>((event, emit) async {
-      emit(AuthUserConnectPage());
     });
 
     // When User Presses the SignOut Button, we will send the SignOutRequested Event to the AuthBloc to handle it and emit the UnAuthenticated State
     on<AuthSignOutRequested>((event, emit) async {
-      emit(AuthLoading());
-      await authRepository.signOut();
-      emit(AuthSignOutInProgress());
-      //emit(UnAuthenticated());
+      emit(AuthenticationLoading());
+      await _authenticationRepository.signOut();
+      emit(AuthenticationFailure());
     });
   }
 }
