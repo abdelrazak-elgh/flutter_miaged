@@ -16,7 +16,6 @@ class InitialNavigationView extends StatelessWidget {
             }
           }
           if (state is AuthenticationFailure) {
-            print('here');
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).popAndPushNamed('/signin');
             } else {

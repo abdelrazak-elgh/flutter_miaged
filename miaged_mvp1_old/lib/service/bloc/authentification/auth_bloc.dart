@@ -10,6 +10,7 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthenticationRepository _authenticationRepository;
+  // ignore: unused_field
   final DatabaseRepository _databaseRepository;
 
   AuthBloc(this._authenticationRepository, this._databaseRepository)
